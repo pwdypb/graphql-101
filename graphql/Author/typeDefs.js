@@ -9,6 +9,10 @@ const typeDefs = `
     type Query {
         getAuthor(_id: ID!): Author!
         getAllAuthors: [Author!]!
+    },
+    type Mutation {
+        createAuthor(firstName: String!, lastName: String!, age: Int!): Author!
+        removeAuthor(_id: ID!): Author!
     }
 `;
 
