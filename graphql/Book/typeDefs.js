@@ -4,7 +4,11 @@ const typeDefs = `
         title: String!
         description: String!
         language: String!
-        author: Author!
+        author: Author
+    },
+    type Query {
+        getBook(_id: ID!): Book!
+        getAllBooks: [Book!]!
     }
 `;
 
