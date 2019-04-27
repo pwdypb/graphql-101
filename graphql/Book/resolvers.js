@@ -16,6 +16,25 @@ const resolvers = {
                 .catch(err => err);
         }
     },
+    Mutation: {
+        createBook: async (parent, {title, description, language, author}, context, info) => {
+            const newBook = await new Book({
+                title,
+                description,
+                language,
+                author
+            });
+
+            return new Promise((resolve, reject) => {
+                newBook.save((err, res) => {
+                    err ? reject(err) : resolve(res);
+                });
+            })
+        },
+        deleteBook: async (parent, {_id}, context, info) => {
+            return await Book.findOneAndDelete({_id});
+        }
+    },
     Book: {
         author: async ({author: authorID}, args, context, info) => {
             return await Author.findById(authorID);
