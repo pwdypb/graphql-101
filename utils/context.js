@@ -7,6 +7,6 @@ const pubsub = new PubSub();
 
 export const context = ({ request }) => ({
     models,
-    pubsub,
-    token: getTokenFromRequest(request)
+    pubsub
+    // token: getTokenFromRequest(request)
 });

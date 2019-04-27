@@ -13,6 +13,11 @@ const typeDefs = `
     type Mutation {
         createBook(title: String!, description: String!, language: String!, author: ID!): Book!
         deleteBook(_id: ID!): Book!
+    },
+    type Subscription {
+        books: [Book!]!
+        bookAdded: Book!
+        bookDeleted: Book!
     }
 `;
 

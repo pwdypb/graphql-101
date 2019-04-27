@@ -1,6 +1,10 @@
 import Book from "../../models/Book";
 import Author from "../../models/Author";
 
+const books = "books";
+const bookAdded = "bookAdded";
+const bookDeleted = "bookDeleted";
+
 const resolvers = {
     Query: {
         getBook: async (parent, {_id}, context, info) => {
@@ -17,7 +21,7 @@ const resolvers = {
         }
     },
     Mutation: {
-        createBook: async (parent, {title, description, language, author}, context, info) => {
+        createBook: async (parent, {title, description, language, author}, {pubsub}, info) => {
             const newBook = await new Book({
                 title,
                 description,
@@ -27,12 +31,43 @@ const resolvers = {
 
             return new Promise((resolve, reject) => {
                 newBook.save((err, res) => {
-                    err ? reject(err) : resolve(res);
+                    if (err) {
+                        reject(err);
+                    } else {
+                        pubsub.publish(books, {
+                            books: Book.find()
+                                .populate()
+                                .then(books => books)
+                                .catch(err => err)
+                        });
+                        pubsub.publish(bookAdded, {bookAdded: newBook});
+                        resolve(res);
+                    }
+                    // err ? reject(err) : resolve(res, pubsub.publish(books, {
+                    //         books: Book.find()
+                    //             .populate()
+                    //             .then(books => books)
+                    //             .catch(err => err)
+                    //     }),
+                    //     pubsub.publish(bookAdded, {bookAdded: newBook}));
                 });
             })
         },
         deleteBook: async (parent, {_id}, context, info) => {
             return await Book.findOneAndDelete({_id});
+        }
+    },
+    Subscription: {
+        books: {
+            subscribe: (parent, args, {pubsub}) => pubsub.asyncIterator(books)
+        },
+        bookAdded: {
+            subscribe: (parent, args, {pubsub}) =>
+                pubsub.asyncIterator(bookAdded)
+        },
+        bookDeleted: {
+            subscribe: (parent, args, {pubsub}) =>
+                pubsub.asyncIterator(bookDeleted)
         }
     },
     Book: {
