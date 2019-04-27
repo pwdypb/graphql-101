@@ -5,6 +5,10 @@ const typeDefs = `
         lastName: String!
         age: Int!
         books: [Book!]!
+    },
+    type Query {
+        getAuthor(_id: ID!): Author!
+        getAllAuthors: [Author!]!
     }
 `;
 
